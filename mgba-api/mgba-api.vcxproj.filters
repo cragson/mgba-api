@@ -22,6 +22,9 @@
     <ClInclude Include="mgba_api.hpp">
       <Filter>files</Filter>
     </ClInclude>
+    <ClInclude Include="mgba_constants.hpp">
+      <Filter>files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="mgba-api.lua">

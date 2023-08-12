@@ -24,6 +24,25 @@ function on_receive()
 				table.insert(parts, part)
 			end
 
+			if #parts == 1 then
+				local instruction = parts[1]
+				
+				console:log("[api:on_receive] received: " .. instruction)
+				
+				if instruction == "GET_GAME_TITLE" then
+					local value = emu:getGameTitle()
+					server_fd:send(value)
+					console:log("[api::get_game_title] sent value " .. value .. " to server")
+				end
+
+				if instruction == "GET_GAME_CODE" then
+					local value = emu:getGameCode()
+					server_fd:send(value)
+					console:log("[api::get_game_code] sent value " .. value .. " to server")
+				end
+				
+			end
+
 			if #parts == 2 then
 				local instruction = parts[1]
 				local parameter = parts[2]
@@ -46,6 +65,20 @@ function on_receive()
 					local value = emu:read32( tonumber( parameter, 16 ) )
 					server_fd:send(value)
 					console:log("[api::read32] sent value " .. value .. " to server")
+				end
+
+				if instruction == "PRESS_KEY" then
+					local value = tonumber( parameter, 10 )
+					emu:addKey( value )
+					server_fd:send("OK")
+					console:log("[api::press_key] pressed key: " .. value )
+				end
+
+				if instruction == "RELEASE_KEY" then
+					local value = tonumber( parameter, 10 )
+					emu:clearKey( value )
+					server_fd:send("OK")
+					console:log("[api::release_key] released key: " .. value )
 				end
 			end	
 			

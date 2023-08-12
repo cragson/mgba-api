@@ -70,7 +70,7 @@ bool mgba_api::wait_for_connection()
 	return true;
 }
 
-std::string mgba_api::recv_message()
+std::string mgba_api::recv_message() const
 {
 	char       buffer[ 1024 ];
 	const auto bytesReceived = recv( this->m_client_fd, buffer, sizeof( buffer ), 0 );
@@ -81,7 +81,7 @@ std::string mgba_api::recv_message()
 	return { buffer };
 }
 
-void mgba_api::send_message( const std::string& msg )
+void mgba_api::send_message( const std::string& msg ) const
 {
 	send( this->m_client_fd, msg.c_str(), msg.size(), 0 );
 }
@@ -96,7 +96,7 @@ bool mgba_api::release_socket()
 	return true;
 }
 
-uint8_t mgba_api::read8( const std::uintptr_t address )
+uint8_t mgba_api::read8( const std::uintptr_t address ) const
 {
 	this->send_message( std::vformat( "READ8 {:x}", std::make_format_args( address ) ) );
 
@@ -105,7 +105,7 @@ uint8_t mgba_api::read8( const std::uintptr_t address )
 	return std::atoi( value.c_str() );
 }
 
-uint16_t mgba_api::read16( const std::uintptr_t address )
+uint16_t mgba_api::read16( const std::uintptr_t address ) const
 {
 	this->send_message( std::vformat( "READ16 {:x}", std::make_format_args( address ) ) );
 
@@ -114,7 +114,7 @@ uint16_t mgba_api::read16( const std::uintptr_t address )
 	return std::atoi( value.c_str() );
 }
 
-uint32_t mgba_api::read32( const std::uintptr_t address )
+uint32_t mgba_api::read32( const std::uintptr_t address ) const
 {
 	this->send_message( std::vformat( "READ32 {:x}", std::make_format_args( address ) ) );
 
@@ -123,23 +123,61 @@ uint32_t mgba_api::read32( const std::uintptr_t address )
 	return std::atoi( value.c_str() );
 }
 
-bool mgba_api::write8( const std::uintptr_t address, const uint8_t value )
+bool mgba_api::write8( const std::uintptr_t address, const uint8_t value ) const
 {
 	this->send_message( std::vformat( "WRITE8 {:x} {}", std::make_format_args( address, value ) ) );
 
 	return this->recv_message() == "OK";
 }
 
-bool mgba_api::write16( const std::uintptr_t address, const uint16_t value )
+bool mgba_api::write16( const std::uintptr_t address, const uint16_t value ) const
 {
 	this->send_message( std::vformat( "WRITE16 {:x} {}", std::make_format_args( address, value ) ) );
 
 	return this->recv_message() == "OK";
 }
 
-bool mgba_api::write32( const std::uintptr_t address, const uint32_t value )
+bool mgba_api::write32( const std::uintptr_t address, const uint32_t value ) const
 {
 	this->send_message( std::vformat( "WRITE32 {:x} {}", std::make_format_args( address, value ) ) );
 
 	return this->recv_message() == "OK";
+}
+
+std::string mgba_api::get_game_title() const
+{
+	this->send_message( "GET_GAME_TITLE" );
+
+	return this->recv_message();
+}
+
+std::string mgba_api::get_game_code() const
+{
+	this->send_message( "GET_GAME_CODE" );
+
+	return this->recv_message();
+}
+
+bool mgba_api::send_key_press( int32_t keycode ) const
+{
+	this->send_message( std::vformat( "PRESS_KEY {}", std::make_format_args( keycode ) ) );
+
+	return this->recv_message() == "OK";
+}
+
+bool mgba_api::send_key_release( int32_t keycode ) const
+{
+	this->send_message( std::vformat( "RELEASE_KEY {}", std::make_format_args( keycode ) ) );
+
+	return this->recv_message() == "OK";
+}
+
+bool mgba_api::press_key_once( int32_t keycode, uint32_t delay ) const
+{
+	if( !this->send_key_press( keycode ) )
+		return false;
+
+	Sleep( delay );
+
+	return this->send_key_release( keycode );
 }

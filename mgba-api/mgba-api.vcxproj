@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mgba_api.hpp" />
+    <ClInclude Include="mgba_constants.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mgba-api.lua" />

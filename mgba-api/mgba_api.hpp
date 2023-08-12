@@ -26,23 +26,30 @@ public:
 		WSACleanup();
 	}
 
-	bool init_socket();
+	[[nodiscard]] bool init_socket();
 
-	bool wait_for_connection();
+	[[nodiscard]] bool wait_for_connection();
 
-	std::string recv_message();
+	[[nodiscard]] std::string recv_message() const;
 
-	void send_message( const std::string& msg );
+	void send_message( const std::string& msg ) const;
 
-	bool release_socket();
+	[[nodiscard]] bool release_socket();
 
-	uint8_t  read8( const std::uintptr_t address );
-	uint16_t read16( const std::uintptr_t address );
-	uint32_t read32( const std::uintptr_t address );
+	[[nodiscard]] uint8_t  read8( const std::uintptr_t address ) const;
+	[[nodiscard]] uint16_t read16( const std::uintptr_t address ) const;
+	[[nodiscard]] uint32_t read32( const std::uintptr_t address ) const;
 
-	bool write8( const std::uintptr_t address, const uint8_t value );
-	bool write16( const std::uintptr_t address, const uint16_t value );
-	bool write32( const std::uintptr_t address, const uint32_t value );
+	[[nodiscard]] bool write8( const std::uintptr_t address, const uint8_t value ) const;
+	[[nodiscard]] bool write16( const std::uintptr_t address, const uint16_t value ) const;
+	[[nodiscard]] bool write32( const std::uintptr_t address, const uint32_t value ) const;
+
+	[[nodiscard]] std::string get_game_title() const;
+	[[nodiscard]] std::string get_game_code() const;
+
+	[[nodiscard]] bool send_key_press( int32_t keycode ) const;
+	[[nodiscard]] bool send_key_release( int32_t keycode ) const;
+	[[nodiscard]] bool press_key_once( int32_t keycode, uint32_t delay = 100 ) const;
 
 private:
 	uint32_t m_port;
